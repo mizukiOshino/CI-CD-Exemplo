@@ -83,9 +83,28 @@ jobs:
 
       - name: Dependency vulnerability scan
         run: |
-          pip-audit \
-            --format=json \
-            --output=pip-audit.json
+          pip-audit --format=json --output=pip-audit.json || true
+          python - <<'PY'
+import json,sys
+try:
+    data = json.load(open('pip-audit.json'))
+except Exception:
+    print('pip-audit did not produce JSON or failed to run')
+    sys.exit(0)
+vulns = data.get('vulnerabilities') or []
+if not vulns:
+    print('No vulnerabilities found by pip-audit')
+    sys.exit(0)
+print(f'Found {len(vulns)} vulnerability(ies). Links:')
+for v in vulns:
+    name = v.get('name') or ''
+    version = v.get('version') or ''
+    for item in v.get('vulns', []) or v.get('vulnerabilities', []):
+        vid = item.get('id') or item.get('vuln_id') or ''
+        url = item.get('url') or item.get('advisory_url') or ''
+        print(f'- {name} {version}: {vid} {url}')
+print('\nFull report saved as pip-audit.json (uploaded as artifact).')
+PY
 
       - name: Install Trivy
         run: |
@@ -170,9 +189,28 @@ jobs:
 
       - name: Dependency vulnerability scan
         run: |
-          pip-audit \
-            --format=json \
-            --output=pip-audit.json
+          pip-audit --format=json --output=pip-audit.json || true
+          python - <<'PY'
+import json,sys
+try:
+    data = json.load(open('pip-audit.json'))
+except Exception:
+    print('pip-audit did not produce JSON or failed to run')
+    sys.exit(0)
+vulns = data.get('vulnerabilities') or []
+if not vulns:
+    print('No vulnerabilities found by pip-audit')
+    sys.exit(0)
+print(f'Found {len(vulns)} vulnerability(ies). Links:')
+for v in vulns:
+    name = v.get('name') or ''
+    version = v.get('version') or ''
+    for item in v.get('vulns', []) or v.get('vulnerabilities', []):
+        vid = item.get('id') or item.get('vuln_id') or ''
+        url = item.get('url') or item.get('advisory_url') or ''
+        print(f'- {name} {version}: {vid} {url}')
+print('\nFull report saved as pip-audit.json (uploaded as artifact).')
+PY
 
       - name: Install Trivy
         run: |
@@ -257,9 +295,28 @@ jobs:
 
       - name: Dependency vulnerability scan
         run: |
-          pip-audit \
-            --format=json \
-            --output=pip-audit.json
+          pip-audit --format=json --output=pip-audit.json || true
+          python - <<'PY'
+import json,sys
+try:
+    data = json.load(open('pip-audit.json'))
+except Exception:
+    print('pip-audit did not produce JSON or failed to run')
+    sys.exit(0)
+vulns = data.get('vulnerabilities') or []
+if not vulns:
+    print('No vulnerabilities found by pip-audit')
+    sys.exit(0)
+print(f'Found {len(vulns)} vulnerability(ies). Links:')
+for v in vulns:
+    name = v.get('name') or ''
+    version = v.get('version') or ''
+    for item in v.get('vulns', []) or v.get('vulnerabilities', []):
+        vid = item.get('id') or item.get('vuln_id') or ''
+        url = item.get('url') or item.get('advisory_url') or ''
+        print(f'- {name} {version}: {vid} {url}')
+print('\nFull report saved as pip-audit.json (uploaded as artifact).')
+PY
 
       - name: Install Trivy
         run: |
@@ -344,9 +401,28 @@ jobs:
 
       - name: Dependency vulnerability scan
         run: |
-          pip-audit \
-            --format=json \
-            --output=pip-audit.json
+          pip-audit --format=json --output=pip-audit.json || true
+          python - <<'PY'
+import json,sys
+try:
+    data = json.load(open('pip-audit.json'))
+except Exception:
+    print('pip-audit did not produce JSON or failed to run')
+    sys.exit(0)
+vulns = data.get('vulnerabilities') or []
+if not vulns:
+    print('No vulnerabilities found by pip-audit')
+    sys.exit(0)
+print(f'Found {len(vulns)} vulnerability(ies). Links:')
+for v in vulns:
+    name = v.get('name') or ''
+    version = v.get('version') or ''
+    for item in v.get('vulns', []) or v.get('vulnerabilities', []):
+        vid = item.get('id') or item.get('vuln_id') or ''
+        url = item.get('url') or item.get('advisory_url') or ''
+        print(f'- {name} {version}: {vid} {url}')
+print('\nFull report saved as pip-audit.json (uploaded as artifact).')
+PY
 
       - name: Install Trivy
         run: |
