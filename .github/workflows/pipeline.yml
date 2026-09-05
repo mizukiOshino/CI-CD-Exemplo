@@ -86,16 +86,18 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          ./snyk auth "$SNYK_TOKEN"
-          ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
+          bash snyk-install.sh
+          export PATH="$HOME/.local/bin:$PATH"
+          snyk auth "$SNYK_TOKEN"
+          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          ./snyk container test "${IMAGE_NAME}:develop-${GITHUB_SHA}" --json > snyk-image.json || true
+          snyk container test "${IMAGE_NAME}:develop-${GITHUB_SHA}" --json > snyk-image.json || true
           echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
@@ -205,15 +207,18 @@ jobs:
             exit 0
           fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          ./snyk auth "$SNYK_TOKEN"
-          ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
+          bash snyk-install.sh
+          export PATH="$HOME/.local/bin:$PATH"
+          snyk auth "$SNYK_TOKEN"
+          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          ./snyk container test "${IMAGE_NAME}:uat-${GITHUB_SHA}" --json > snyk-image.json || true
+          snyk container test "${IMAGE_NAME}:uat-${GITHUB_SHA}" --json > snyk-image.json || true
           echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
@@ -323,15 +328,18 @@ jobs:
             exit 0
           fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          ./snyk auth "$SNYK_TOKEN"
-          ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
+          bash snyk-install.sh
+          export PATH="$HOME/.local/bin:$PATH"
+          snyk auth "$SNYK_TOKEN"
+          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          ./snyk container test "${IMAGE_NAME}:master-${GITHUB_SHA}" --json > snyk-image.json || true
+          snyk container test "${IMAGE_NAME}:master-${GITHUB_SHA}" --json > snyk-image.json || true
           echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
@@ -441,15 +449,18 @@ jobs:
             exit 0
           fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          ./snyk auth "$SNYK_TOKEN"
-          ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
+          bash snyk-install.sh
+          export PATH="$HOME/.local/bin:$PATH"
+          snyk auth "$SNYK_TOKEN"
+          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          ./snyk container test "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" --json > snyk-image.json || true
+          snyk container test "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" --json > snyk-image.json || true
           echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
             jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
