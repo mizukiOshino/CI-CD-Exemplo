@@ -4,7 +4,7 @@ Este projeto é um exemplo mínimo em Python para demonstrar o pipeline definido
 
 Instruções rápidas:
 
-1. Instalar dependências de desenvolvimento:
+1. Instalar dependências de desenvolvimento: 
 
 ```bash
 python -m pip install --upgrade pip
