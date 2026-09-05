@@ -1,4 +1,4 @@
-requests==2.31.0
-flask==2.2.5
-
-# Nota: versões fixas ajudam na reprodutibilidade e no scanner de vulnerabilidades.
+pytest==7.4.0
+pytest-cov==4.1.0
+# pip-audit v3.0.0 is not available on PyPI for all runners; pin to a compatible v2 release
+pip-audit==2.10.1
