@@ -1,0 +1,354 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+      - uat
+      - master
+      - hotfix
+      - 'hotfix/**'
+
+  pull_request:
+    branches:
+      - develop
+      - uat
+      - master
+      - hotfix
+      - 'hotfix/**'
+
+permissions:
+  contents: read
+
+env:
+  PYTHON_VERSION: "3.12"
+  IMAGE_NAME: "my-application"
+
+jobs:
+
+  # ============================================================
+  # DEVELOP
+  # ============================================================
+
+  develop:
+    name: "CI - Develop"
+    if: github.ref == 'refs/heads/develop' || github.base_ref == 'develop'
+    runs-on: ubuntu-latest
+    environment: develop
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pip-audit
+
+      # -------------------------
+      # TESTS
+      # -------------------------
+
+      - name: Run tests
+        run: |
+          pytest \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml
+
+      # -------------------------
+      # BUILD
+      # -------------------------
+
+      - name: Docker build
+        run: |
+          docker build \
+            -t "${IMAGE_NAME}:develop-${GITHUB_SHA}" \
+            .
+
+      # -------------------------
+      # VULNERABILITIES
+      # -------------------------
+
+      - name: Dependency vulnerability scan
+        run: |
+          pip-audit \
+            --format=json \
+            --output=pip-audit.json
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+
+      # -------------------------
+      # REPORTS
+      # -------------------------
+
+      - name: Upload CI reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-develop
+          path: |
+            coverage.xml
+            pip-audit.json
+          if-no-files-found: ignore
+
+
+  # ============================================================
+  # UAT
+  # ============================================================
+
+  uat:
+    name: "CI - UAT"
+    if: github.ref == 'refs/heads/uat' || github.base_ref == 'uat'
+    runs-on: ubuntu-latest
+    environment: uat
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pip-audit
+
+      # -------------------------
+      # TESTS
+      # -------------------------
+
+      - name: Run tests
+        run: |
+          pytest \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml
+
+      # -------------------------
+      # BUILD
+      # -------------------------
+
+      - name: Docker build
+        run: |
+          docker build \
+            -t "${IMAGE_NAME}:uat-${GITHUB_SHA}" \
+            .
+
+      # -------------------------
+      # VULNERABILITIES
+      # -------------------------
+
+      - name: Dependency vulnerability scan
+        run: |
+          pip-audit \
+            --format=json \
+            --output=pip-audit.json
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+
+      # -------------------------
+      # REPORTS
+      # -------------------------
+
+      - name: Upload CI reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-uat
+          path: |
+            coverage.xml
+            pip-audit.json
+          if-no-files-found: ignore
+
+
+  # ============================================================
+  # MASTER
+  # ============================================================
+
+  master:
+    name: "CI - Master"
+    if: github.ref == 'refs/heads/master' || github.base_ref == 'master'
+    runs-on: ubuntu-latest
+    environment: master
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pip-audit
+
+      # -------------------------
+      # TESTS
+      # -------------------------
+
+      - name: Run tests
+        run: |
+          pytest \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml
+
+      # -------------------------
+      # BUILD
+      # -------------------------
+
+      - name: Docker build
+        run: |
+          docker build \
+            -t "${IMAGE_NAME}:master-${GITHUB_SHA}" \
+            .
+
+      # -------------------------
+      # VULNERABILITIES
+      # -------------------------
+
+      - name: Dependency vulnerability scan
+        run: |
+          pip-audit \
+            --format=json \
+            --output=pip-audit.json
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+
+      # -------------------------
+      # REPORTS
+      # -------------------------
+
+      - name: Upload CI reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-master
+          path: |
+            coverage.xml
+            pip-audit.json
+          if-no-files-found: ignore
+
+
+  # ============================================================
+  # HOTFIX
+  # ============================================================
+
+  hotfix:
+    name: "CI - Hotfix"
+    if: startsWith(github.ref, 'refs/heads/hotfix') || startsWith(github.base_ref, 'hotfix')
+    runs-on: ubuntu-latest
+    environment: hotfix
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pip-audit
+
+      # -------------------------
+      # TESTS
+      # -------------------------
+
+      - name: Run tests
+        run: |
+          pytest \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml
+
+      # -------------------------
+      # BUILD
+      # -------------------------
+
+      - name: Docker build
+        run: |
+          docker build \
+            -t "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" \
+            .
+
+      # -------------------------
+      # VULNERABILITIES
+      # -------------------------
+
+      - name: Dependency vulnerability scan
+        run: |
+          pip-audit \
+            --format=json \
+            --output=pip-audit.json
+
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln,secret,misconfig
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          format: table
+
+      # -------------------------
+      # REPORTS
+      # -------------------------
+
+      - name: Upload CI reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports-hotfix
+          path: |
+            coverage.xml
+            pip-audit.json
+          if-no-files-found: ignore
