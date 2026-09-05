@@ -39,16 +39,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Setup Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Setup steps removed; Pre-build contains checks and installs
 
       - name: Pre-build
         run: |
@@ -99,6 +90,8 @@ jobs:
             echo "snyk image did not produce snyk-image.json"
           fi
 
+      # Post-setup steps removed (no-op)
+
       - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
@@ -125,10 +118,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Setup steps removed; Pre-build contains checks and installs
 
       - name: Pre-build
         run: |
@@ -179,6 +169,8 @@ jobs:
             echo "snyk image did not produce snyk-image.json"
           fi
 
+      # Post-setup steps removed (no-op)
+
       - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
@@ -205,10 +197,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Setup steps removed; Pre-build contains checks and installs
 
       - name: Pre-build
         run: |
@@ -259,6 +248,8 @@ jobs:
             echo "snyk image did not produce snyk-image.json"
           fi
 
+      # Post-setup steps removed (no-op)
+
       - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
@@ -285,10 +276,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Setup steps removed; Pre-build contains checks and installs
 
       - name: Pre-build
         run: |
@@ -338,6 +326,8 @@ jobs:
           else
             echo "snyk image did not produce snyk-image.json"
           fi
+
+      # Post-setup steps removed (no-op)
 
       - name: Post-deploy
         if: always()
