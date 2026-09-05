@@ -57,10 +57,13 @@ jobs:
       # -------------------------
 
       - name: Run tests
+        env:
+          PYTHONPATH: src
         run: |
-          export PYTHONPATH=src
-          pytest \
-            --cov=. \
+          ls -R
+          python -c "import sys; print(sys.executable); print(sys.path)"
+          pytest tests \
+            --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
 
@@ -141,10 +144,13 @@ jobs:
       # -------------------------
 
       - name: Run tests
+        env:
+          PYTHONPATH: src
         run: |
-          export PYTHONPATH=src
-          pytest \
-            --cov=. \
+          ls -R
+          python -c "import sys; print(sys.executable); print(sys.path)"
+          pytest tests \
+            --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
 
@@ -225,10 +231,13 @@ jobs:
       # -------------------------
 
       - name: Run tests
+        env:
+          PYTHONPATH: src
         run: |
-          export PYTHONPATH=src
-          pytest \
-            --cov=. \
+          ls -R
+          python -c "import sys; print(sys.executable); print(sys.path)"
+          pytest tests \
+            --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
 
@@ -309,10 +318,13 @@ jobs:
       # -------------------------
 
       - name: Run tests
+        env:
+          PYTHONPATH: src
         run: |
-          export PYTHONPATH=src
-          pytest \
-            --cov=. \
+          ls -R
+          python -c "import sys; print(sys.executable); print(sys.path)"
+          pytest tests \
+            --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
 
