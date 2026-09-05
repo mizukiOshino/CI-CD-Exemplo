@@ -1,0 +1,4 @@
+requests==2.31.0
+flask==2.2.5
+
+# Nota: versões fixas ajudam na reprodutibilidade e no scanner de vulnerabilidades.
