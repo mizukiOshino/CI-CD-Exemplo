@@ -80,8 +80,12 @@ jobs:
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        shell: bash
         run: |
-          if [ -z "$SNYK_TOKEN" ]; then echo "SNYK_TOKEN not set, skipping Snyk scans"; exit 0; fi
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "SNYK_TOKEN not set, skipping Snyk scans"
+            exit 0
+          fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
           ./snyk auth "$SNYK_TOKEN"
           ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
@@ -194,8 +198,12 @@ jobs:
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        shell: bash
         run: |
-          if [ -z "$SNYK_TOKEN" ]; then echo "SNYK_TOKEN not set, skipping Snyk scans"; exit 0; fi
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "SNYK_TOKEN not set, skipping Snyk scans"
+            exit 0
+          fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
           ./snyk auth "$SNYK_TOKEN"
           ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
@@ -308,8 +316,12 @@ jobs:
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        shell: bash
         run: |
-          if [ -z "$SNYK_TOKEN" ]; then echo "SNYK_TOKEN not set, skipping Snyk scans"; exit 0; fi
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "SNYK_TOKEN not set, skipping Snyk scans"
+            exit 0
+          fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
           ./snyk auth "$SNYK_TOKEN"
           ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
@@ -422,8 +434,12 @@ jobs:
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        shell: bash
         run: |
-          if [ -z "$SNYK_TOKEN" ]; then echo "SNYK_TOKEN not set, skipping Snyk scans"; exit 0; fi
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "SNYK_TOKEN not set, skipping Snyk scans"
+            exit 0
+          fi
           curl -sL https://static.snyk.io/cli/latest/install.sh | sh
           ./snyk auth "$SNYK_TOKEN"
           ./snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
