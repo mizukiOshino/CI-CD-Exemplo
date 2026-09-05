@@ -83,15 +83,16 @@ jobs:
             --format=json \
             --output=pip-audit.json
 
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
       - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@v0
-        with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln,secret,misconfig
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          format: table
+        run: |
+          trivy fs . \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            --format table
 
       # -------------------------
       # REPORTS
@@ -165,15 +166,16 @@ jobs:
             --format=json \
             --output=pip-audit.json
 
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
       - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@v0
-        with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln,secret,misconfig
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          format: table
+        run: |
+          trivy fs . \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            --format table
 
       # -------------------------
       # REPORTS
@@ -247,15 +249,16 @@ jobs:
             --format=json \
             --output=pip-audit.json
 
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
       - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@v0
-        with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln,secret,misconfig
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          format: table
+        run: |
+          trivy fs . \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            --format table
 
       # -------------------------
       # REPORTS
@@ -329,15 +332,16 @@ jobs:
             --format=json \
             --output=pip-audit.json
 
+      - name: Install Trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
       - name: Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@v0
-        with:
-          scan-type: fs
-          scan-ref: .
-          scanners: vuln,secret,misconfig
-          severity: HIGH,CRITICAL
-          exit-code: 1
-          format: table
+        run: |
+          trivy fs . \
+            --scanners vuln,secret,misconfig \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            --format table
 
       # -------------------------
       # REPORTS
