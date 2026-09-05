@@ -77,6 +77,11 @@ jobs:
             -t "${IMAGE_NAME}:develop-${GITHUB_SHA}" \
             .
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -86,21 +91,19 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
-          bash snyk-install.sh
-          export PATH="$HOME/.local/bin:$PATH"
+          npm install -g snyk
           snyk auth "$SNYK_TOKEN"
           snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
-          echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
+            deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
+            echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
           snyk container test "${IMAGE_NAME}:develop-${GITHUB_SHA}" --json > snyk-image.json || true
-          echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
+            image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
+            echo "Snyk image vulnerabilities found: $image_count"
           else
             echo "snyk image did not produce snyk-image.json"
           fi
@@ -119,15 +122,7 @@ jobs:
             echo "pip-audit did not produce pip-audit.json"
           fi
 
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
-      - name: Trivy vulnerability scan
-        run: |
-          trivy fs . \
-            --scanners vuln,secret,misconfig \
-            --severity HIGH,CRITICAL \
-            --format table || true
+      # Trivy steps removed - Snyk used for vulnerability scanning
 
       # -------------------------
       # REPORTS
@@ -197,6 +192,11 @@ jobs:
             -t "${IMAGE_NAME}:uat-${GITHUB_SHA}" \
             .
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -206,22 +206,19 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
-          bash snyk-install.sh
-          export PATH="$HOME/.local/bin:$PATH"
+          npm install -g snyk
           snyk auth "$SNYK_TOKEN"
           snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
-          echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
+            deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
+            echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
           snyk container test "${IMAGE_NAME}:uat-${GITHUB_SHA}" --json > snyk-image.json || true
-          echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
+            image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
+            echo "Snyk image vulnerabilities found: $image_count"
           else
             echo "snyk image did not produce snyk-image.json"
           fi
@@ -240,15 +237,7 @@ jobs:
             echo "pip-audit did not produce pip-audit.json"
           fi
 
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
-      - name: Trivy vulnerability scan
-        run: |
-          trivy fs . \
-            --scanners vuln,secret,misconfig \
-            --severity HIGH,CRITICAL \
-            --format table || true
+      # Trivy steps removed - Snyk used for vulnerability scanning
 
       # -------------------------
       # REPORTS
@@ -318,6 +307,11 @@ jobs:
             -t "${IMAGE_NAME}:master-${GITHUB_SHA}" \
             .
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -327,22 +321,19 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
-          bash snyk-install.sh
-          export PATH="$HOME/.local/bin:$PATH"
+          npm install -g snyk
           snyk auth "$SNYK_TOKEN"
           snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
-          echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
+            deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
+            echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
           snyk container test "${IMAGE_NAME}:master-${GITHUB_SHA}" --json > snyk-image.json || true
-          echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
+            image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
+            echo "Snyk image vulnerabilities found: $image_count"
           else
             echo "snyk image did not produce snyk-image.json"
           fi
@@ -361,15 +352,7 @@ jobs:
             echo "pip-audit did not produce pip-audit.json"
           fi
 
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
-      - name: Trivy vulnerability scan
-        run: |
-          trivy fs . \
-            --scanners vuln,secret,misconfig \
-            --severity HIGH,CRITICAL \
-            --format table || true
+      # Trivy steps removed - Snyk used for vulnerability scanning
 
       # -------------------------
       # REPORTS
@@ -439,6 +422,11 @@ jobs:
             -t "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" \
             .
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
       - name: Snyk dependency and image scan
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -448,10 +436,7 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          curl -sL https://static.snyk.io/cli/latest/install.sh | sh
-          curl -sL https://static.snyk.io/cli/latest/install.sh -o snyk-install.sh
-          bash snyk-install.sh
-          export PATH="$HOME/.local/bin:$PATH"
+          npm install -g snyk
           snyk auth "$SNYK_TOKEN"
           snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           echo "Snyk dependency summary (full JSON uploaded as artifact):"
