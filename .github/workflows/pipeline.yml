@@ -39,14 +39,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
       - name: Pre-build
         run: |
+          echo "Checking Python and Node/npm versions"
+          python --version || echo "Python not found"
+          node --version || echo "Node not found"
+          npm --version || echo "npm not found"
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -63,10 +72,7 @@ jobs:
             --cov-report=xml:coverage.xml
           docker build -t "${IMAGE_NAME}:develop-${GITHUB_SHA}" .
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Using runner's Node/npm; explicit setup removed for simplicity
 
       - name: Post-build
         env:
@@ -77,16 +83,15 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          npm install -g snyk
-          snyk auth "$SNYK_TOKEN"
-          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          npx --yes snyk auth "$SNYK_TOKEN"
+          npx --yes snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           if [ -f snyk-deps.json ]; then
             deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
             echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          snyk container test "${IMAGE_NAME}:develop-${GITHUB_SHA}" --json > snyk-image.json || true
+          npx --yes snyk container test "${IMAGE_NAME}:develop-${GITHUB_SHA}" --json > snyk-image.json || true
           if [ -f snyk-image.json ]; then
             image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
             echo "Snyk image vulnerabilities found: $image_count"
@@ -120,13 +125,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
+          node-version: '18'
+
       - name: Pre-build
         run: |
+          echo "Checking Python and Node/npm versions"
+          python --version || echo "Python not found"
+          node --version || echo "Node not found"
+          npm --version || echo "npm not found"
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -143,10 +152,7 @@ jobs:
             --cov-report=xml:coverage.xml
           docker build -t "${IMAGE_NAME}:uat-${GITHUB_SHA}" .
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Using runner's Node/npm; explicit setup removed for simplicity
 
       - name: Post-build
         env:
@@ -157,16 +163,15 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          npm install -g snyk
-          snyk auth "$SNYK_TOKEN"
-          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          npx --yes snyk auth "$SNYK_TOKEN"
+          npx --yes snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           if [ -f snyk-deps.json ]; then
             deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
             echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          snyk container test "${IMAGE_NAME}:uat-${GITHUB_SHA}" --json > snyk-image.json || true
+          npx --yes snyk container test "${IMAGE_NAME}:uat-${GITHUB_SHA}" --json > snyk-image.json || true
           if [ -f snyk-image.json ]; then
             image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
             echo "Snyk image vulnerabilities found: $image_count"
@@ -200,13 +205,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
+          node-version: '18'
+
       - name: Pre-build
         run: |
+          echo "Checking Python and Node/npm versions"
+          python --version || echo "Python not found"
+          node --version || echo "Node not found"
+          npm --version || echo "npm not found"
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -223,10 +232,7 @@ jobs:
             --cov-report=xml:coverage.xml
           docker build -t "${IMAGE_NAME}:master-${GITHUB_SHA}" .
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Using runner's Node/npm; explicit setup removed for simplicity
 
       - name: Post-build
         env:
@@ -237,16 +243,15 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          npm install -g snyk
-          snyk auth "$SNYK_TOKEN"
-          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          npx --yes snyk auth "$SNYK_TOKEN"
+          npx --yes snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           if [ -f snyk-deps.json ]; then
             deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
             echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          snyk container test "${IMAGE_NAME}:master-${GITHUB_SHA}" --json > snyk-image.json || true
+          npx --yes snyk container test "${IMAGE_NAME}:master-${GITHUB_SHA}" --json > snyk-image.json || true
           if [ -f snyk-image.json ]; then
             image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
             echo "Snyk image vulnerabilities found: $image_count"
@@ -280,13 +285,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Setup Python
-        uses: actions/setup-python@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
-          cache: pip
+          node-version: '18'
+
       - name: Pre-build
         run: |
+          echo "Checking Python and Node/npm versions"
+          python --version || echo "Python not found"
+          node --version || echo "Node not found"
+          npm --version || echo "npm not found"
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
@@ -303,10 +312,7 @@ jobs:
             --cov-report=xml:coverage.xml
           docker build -t "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" .
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
+      # Using runner's Node/npm; explicit setup removed for simplicity
 
       - name: Post-build
         env:
@@ -317,16 +323,15 @@ jobs:
             echo "SNYK_TOKEN not set, skipping Snyk scans"
             exit 0
           fi
-          npm install -g snyk
-          snyk auth "$SNYK_TOKEN"
-          snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
+          npx --yes snyk auth "$SNYK_TOKEN"
+          npx --yes snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
           if [ -f snyk-deps.json ]; then
             deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
             echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
-          snyk container test "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" --json > snyk-image.json || true
+          npx --yes snyk container test "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" --json > snyk-image.json || true
           if [ -f snyk-image.json ]; then
             image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
             echo "Snyk image vulnerabilities found: $image_count"
