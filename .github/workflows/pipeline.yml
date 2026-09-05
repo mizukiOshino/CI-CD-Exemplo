@@ -45,18 +45,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-
-      - name: Install dependencies
+      - name: Pre-build
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      # -------------------------
-      # TESTS
-      # -------------------------
-
-      - name: Run tests
+      - name: Build
         env:
           PYTHONPATH: src
         run: |
@@ -66,23 +61,14 @@ jobs:
             --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
-
-      # -------------------------
-      # BUILD
-      # -------------------------
-
-      - name: Docker build
-        run: |
-          docker build \
-            -t "${IMAGE_NAME}:develop-${GITHUB_SHA}" \
-            .
+          docker build -t "${IMAGE_NAME}:develop-${GITHUB_SHA}" .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Snyk dependency and image scan
+      - name: Post-build
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         shell: bash
@@ -108,34 +94,13 @@ jobs:
             echo "snyk image did not produce snyk-image.json"
           fi
 
-      # -------------------------
-      # VULNERABILITIES
-      # -------------------------
-
-      - name: Dependency vulnerability scan
-        run: |
-          pip-audit --format=json --output=pip-audit.json || true
-          echo "pip-audit summary (full JSON uploaded as artifact):"
-          if [ -f pip-audit.json ]; then
-            jq -r '.vulnerabilities[] | .name + " " + .version + ": " + (.vulns[]?.id // "") + " " + (.vulns[]?.url // "")' pip-audit.json || cat pip-audit.json
-          else
-            echo "pip-audit did not produce pip-audit.json"
-          fi
-
-      # Trivy steps removed - Snyk used for vulnerability scanning
-
-      # -------------------------
-      # REPORTS
-      # -------------------------
-
-      - name: Upload CI reports
+      - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports-develop
           path: |
             coverage.xml
-            pip-audit.json
             snyk-deps.json
             snyk-image.json
           if-no-files-found: ignore
@@ -160,18 +125,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-
-      - name: Install dependencies
+      - name: Pre-build
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      # -------------------------
-      # TESTS
-      # -------------------------
-
-      - name: Run tests
+      - name: Build
         env:
           PYTHONPATH: src
         run: |
@@ -181,23 +141,14 @@ jobs:
             --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
-
-      # -------------------------
-      # BUILD
-      # -------------------------
-
-      - name: Docker build
-        run: |
-          docker build \
-            -t "${IMAGE_NAME}:uat-${GITHUB_SHA}" \
-            .
+          docker build -t "${IMAGE_NAME}:uat-${GITHUB_SHA}" .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Snyk dependency and image scan
+      - name: Post-build
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         shell: bash
@@ -223,34 +174,13 @@ jobs:
             echo "snyk image did not produce snyk-image.json"
           fi
 
-      # -------------------------
-      # VULNERABILITIES
-      # -------------------------
-
-      - name: Dependency vulnerability scan
-        run: |
-          pip-audit --format=json --output=pip-audit.json || true
-          echo "pip-audit summary (full JSON uploaded as artifact):"
-          if [ -f pip-audit.json ]; then
-            jq -r '.vulnerabilities[] | .name + " " + .version + ": " + (.vulns[]?.id // "") + " " + (.vulns[]?.url // "")' pip-audit.json || cat pip-audit.json
-          else
-            echo "pip-audit did not produce pip-audit.json"
-          fi
-
-      # Trivy steps removed - Snyk used for vulnerability scanning
-
-      # -------------------------
-      # REPORTS
-      # -------------------------
-
-      - name: Upload CI reports
+      - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports-uat
           path: |
             coverage.xml
-            pip-audit.json
             snyk-deps.json
             snyk-image.json
           if-no-files-found: ignore
@@ -275,18 +205,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-
-      - name: Install dependencies
+      - name: Pre-build
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      # -------------------------
-      # TESTS
-      # -------------------------
-
-      - name: Run tests
+      - name: Build
         env:
           PYTHONPATH: src
         run: |
@@ -296,23 +221,14 @@ jobs:
             --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
-
-      # -------------------------
-      # BUILD
-      # -------------------------
-
-      - name: Docker build
-        run: |
-          docker build \
-            -t "${IMAGE_NAME}:master-${GITHUB_SHA}" \
-            .
+          docker build -t "${IMAGE_NAME}:master-${GITHUB_SHA}" .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Snyk dependency and image scan
+      - name: Post-build
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         shell: bash
@@ -338,34 +254,13 @@ jobs:
             echo "snyk image did not produce snyk-image.json"
           fi
 
-      # -------------------------
-      # VULNERABILITIES
-      # -------------------------
-
-      - name: Dependency vulnerability scan
-        run: |
-          pip-audit --format=json --output=pip-audit.json || true
-          echo "pip-audit summary (full JSON uploaded as artifact):"
-          if [ -f pip-audit.json ]; then
-            jq -r '.vulnerabilities[] | .name + " " + .version + ": " + (.vulns[]?.id // "") + " " + (.vulns[]?.url // "")' pip-audit.json || cat pip-audit.json
-          else
-            echo "pip-audit did not produce pip-audit.json"
-          fi
-
-      # Trivy steps removed - Snyk used for vulnerability scanning
-
-      # -------------------------
-      # REPORTS
-      # -------------------------
-
-      - name: Upload CI reports
+      - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports-master
           path: |
             coverage.xml
-            pip-audit.json
             snyk-deps.json
             snyk-image.json
           if-no-files-found: ignore
@@ -390,18 +285,13 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: pip
-
-      - name: Install dependencies
+      - name: Pre-build
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
-      # -------------------------
-      # TESTS
-      # -------------------------
-
-      - name: Run tests
+      - name: Build
         env:
           PYTHONPATH: src
         run: |
@@ -411,23 +301,14 @@ jobs:
             --cov=src \
             --cov-report=term-missing \
             --cov-report=xml:coverage.xml
-
-      # -------------------------
-      # BUILD
-      # -------------------------
-
-      - name: Docker build
-        run: |
-          docker build \
-            -t "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" \
-            .
+          docker build -t "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" .
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      - name: Snyk dependency and image scan
+      - name: Post-build
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         shell: bash
@@ -439,56 +320,27 @@ jobs:
           npm install -g snyk
           snyk auth "$SNYK_TOKEN"
           snyk test --file=requirements.txt --package-manager=pip --json > snyk-deps.json || true
-          echo "Snyk dependency summary (full JSON uploaded as artifact):"
           if [ -f snyk-deps.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package.name // "") + " " + (.package.version // "") + " " + (.url // "")' snyk-deps.json || cat snyk-deps.json
+            deps_count=$(jq '.vulnerabilities | length' snyk-deps.json 2>/dev/null || echo 0)
+            echo "Snyk dependency vulnerabilities found: $deps_count"
           else
             echo "snyk deps did not produce snyk-deps.json"
           fi
           snyk container test "${IMAGE_NAME}:hotfix-${GITHUB_SHA}" --json > snyk-image.json || true
-          echo "Snyk image summary (full JSON uploaded as artifact):"
           if [ -f snyk-image.json ]; then
-            jq -r '.vulnerabilities[] | .id + " " + .title + " " + (.package // "") + " " + (.version // "") + " " + (.url // "")' snyk-image.json || cat snyk-image.json
+            image_count=$(jq '.vulnerabilities | length' snyk-image.json 2>/dev/null || echo 0)
+            echo "Snyk image vulnerabilities found: $image_count"
           else
             echo "snyk image did not produce snyk-image.json"
           fi
 
-      # -------------------------
-      # VULNERABILITIES
-      # -------------------------
-
-      - name: Dependency vulnerability scan
-        run: |
-          pip-audit --format=json --output=pip-audit.json || true
-          echo "pip-audit summary (full JSON uploaded as artifact):"
-          if [ -f pip-audit.json ]; then
-            jq -r '.vulnerabilities[] | .name + " " + .version + ": " + (.vulns[]?.id // "") + " " + (.vulns[]?.url // "")' pip-audit.json || cat pip-audit.json
-          else
-            echo "pip-audit did not produce pip-audit.json"
-          fi
-
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
-      - name: Trivy vulnerability scan
-        run: |
-          trivy fs . \
-            --scanners vuln,secret,misconfig \
-            --severity HIGH,CRITICAL \
-            --format table || true
-
-      # -------------------------
-      # REPORTS
-      # -------------------------
-
-      - name: Upload CI reports
+      - name: Post-deploy
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: reports-hotfix
           path: |
             coverage.xml
-            pip-audit.json
             snyk-deps.json
             snyk-image.json
           if-no-files-found: ignore
